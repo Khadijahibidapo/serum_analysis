@@ -1,0 +1,94 @@
+---
+title: "Report Analysis"
+output: html_notebook
+date: "01/16/2023"
+by: Khadijat I.
+---
+
+This is the report for the analysis of the data "REPORT_TO_ANALYZE".
+
+#PREPARING DATA  
+The titles of the columns where made consistent within excel spreadsheet and imported to RStudio where the analysis took place.
+
+#DATA WRANGLING  
+While cleaning the data to remove the character included withing the columns, the data rendered NA.
+
+```{r}
+report_to_analyze$country <- gsub("_","",as.numeric(report_to_analyze$country))
+report_to_analyze$gender <- gsub("_","",as.integer(report_to_analyze$gender))
+report_to_analyze$age_ranges <- gsub("_","",as.integer(report_to_analyze$age_ranges))
+report_to_analyze$occupation_screener <- gsub("_","",as.integer(report_to_analyze$occupation_screener))
+report_to_analyze$frequency <- gsub("_","",as.integer(report_to_analyze$frequency))
+report_to_analyze$attitudes <- gsub("_","",as.integer(report_to_analyze$attitudes))
+report_to_analyze$destination <- gsub("_","",as.numeric(report_to_analyze$destination))
+report_to_analyze$departure_us <- gsub("_","",as.numeric(report_to_analyze$departure_us))
+report_to_analyze$quotas_departure_us <- gsub("_","",as.numeric(report_to_analyze$quotas_departure_us))
+report_to_analyze$lifestage <- gsub("_","",as.numeric(report_to_analyze$lifestage))
+report_to_analyze$how_do_you_travel <- gsub("_","",as.numeric(report_to_analyze$how_do_you_travel))
+report_to_analyze$time_last_flight <- gsub("_","",as.numeric(report_to_analyze$time_last_flight))
+report_to_analyze$excited_towards_next_flight <- gsub("_","",as.numeric(report_to_analyze$excited_towards_next_flight))
+```
+
+
+```{r}
+head(report_to_analyze)
+```
+
+
+#DATA ANALYSIS  
+  
+Only three columns are available for analysis:  
+  
+* exact_age
+* share_leisure
+* share_business  
+  
+Each of the columns are analysed for:  
+  
+* mean
+* standard deviatio
+* correlation between the variables
+* plot showing relationship between the variables  
+
+```{r}
+report1 <- 
+  report_to_analyze %>%
+  summarise(mean(exact_age), sd(exact_age), mean(share_leisure),
+            sd(share_leisure), mean(share_business), sd(share_business),
+            cor(share_business, exact_age, method = "pearson"),
+            cor(share_leisure, exact_age, method = "pearson"),
+            .groups = NULL)
+```
+
+
+```{r}
+View(report1)
+```
+
+
+```{r}
+head(report1)
+```
+
+
+```{r}
+ggplot(report_to_analyze)+
+  geom_line(mapping = aes(x=report_to_analyze$exact_age,y=report_to_analyze$share_business))
+```
+
+
+```{r}
+ggplot(report_to_analyze)+
+  geom_line(mapping = aes(x=report_to_analyze$share_leisure,y=report_to_analyze$share_business))
+```
+
+```{r}
+ggplot(report_to_analyze)+
+  geom_line(mapping = aes(x=report_to_analyze$exact_age,y=report_to_analyze$share_leisure))
+```
+
+Linear regression by Pearson for the variables that are related. The share_business and share_leisure.
+
+```{r}
+lm(report_to_analyze$share_leisure~report_to_analyze$share_business)
+```
